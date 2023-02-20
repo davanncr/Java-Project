@@ -1,3 +1,5 @@
+import Feature.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -53,22 +55,38 @@ public class Dasboard extends Window{
         label[0].addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 selectedLabel.setBounds(0,label[0].getY()-5,featurePanel.getWidth(),40);
+                rightPanel.removeAll();
+                rightPanel.add(Hire.getPanel());
+                revalidate();
+                repaint();
             }
         });
         label[1].addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 selectedLabel.setBounds(0,label[1].getY()-5,featurePanel.getWidth(),40);
+                rightPanel.removeAll();
+                rightPanel.add(Staying.getPanel());
+                revalidate();
+                repaint();
             }
         });
         label[2].addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 selectedLabel.setBounds(0,label[2].getY()-5,featurePanel.getWidth(),40);
+                rightPanel.removeAll();
+                rightPanel.add(Leaving.getPanel());
+                revalidate();
+                repaint();
             }
         });
         label[3].addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 selectedLabel.setBounds(0,label[3].getY()-5,featurePanel.getWidth(),40);
+                rightPanel.removeAll();
+                rightPanel.add(Staying.getPanel());
+                revalidate();
+                repaint();
             }
         });
         featurePanel.add(selectedLabel);
@@ -78,5 +96,7 @@ public class Dasboard extends Window{
         rightPanel.setSize(getWidth()-getWidth()/5,getHeight());
         rightPanel.setBackground(Color.white);
         rightPanel.setLocation(getWidth()/5,0);
+        rightPanel.setLayout(new GridLayout());
+        rightPanel.add(Hire.getPanel());
     }
 }
