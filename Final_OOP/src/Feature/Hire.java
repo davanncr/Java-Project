@@ -1,6 +1,5 @@
 package Feature;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -107,6 +106,7 @@ public class Hire{
         JLabel lblExpire = new JLabel("Date Expire");
         lblExpire.setBounds(50,320,150,25);
         lblExpire.setFont(Model.font1);
+
         panel.add(lblExpire);
         JDateChooser dateExpire = new JDateChooser();
         dateExpire.setBounds(50,345,600,30);
