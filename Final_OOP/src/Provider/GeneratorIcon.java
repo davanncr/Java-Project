@@ -1,4 +1,4 @@
-package Dasboard;
+package Provider;
 
 import javax.swing.*;
 import java.awt.*;

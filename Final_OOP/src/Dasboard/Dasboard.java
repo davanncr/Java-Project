@@ -1,14 +1,16 @@
 package Dasboard;
 
 import Feature.*;
+import Provider.GeneratorIcon;
 import Provider.Model;
+import Provider.Window;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class Dasboard extends Window{
+public class Dasboard extends Window {
     private JPanel superPanel;//for store other panel (rightPanel,featurePanel)
     private JPanel rightPanel;//for store other panel on the right
     private JPanel featurePanel;//for store other feature

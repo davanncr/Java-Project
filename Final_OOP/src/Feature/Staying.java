@@ -7,14 +7,18 @@ import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.concurrent.atomic.AtomicReference;
 
+import Provider.TableEditable;
 import com.toedter.calendar.JDateChooser;
 
 public class Staying {
     private static int leangNumber=0;
     private static AtomicReference<Object> objectSearch = new AtomicReference<>(null);
+    private static TableEditable defaultTableModel;
+    private static ArrayList<Integer> rows = new ArrayList<>();
     public static JPanel getPanel(){
         JPanel panel = new JPanel();
         panel.setLayout(null);
@@ -92,7 +96,7 @@ public class Staying {
         tablePanel.setBounds(50,100,600,400);
         tablePanel.setLayout(new GridLayout());
         tablePanel.setBackground(Color.white);
-        DefaultTableModel defaultTableModel = new DefaultTableModel();
+       defaultTableModel = new TableEditable();
         defaultTableModel.addColumn("ID Card");
         defaultTableModel.addColumn("Full Name");
         defaultTableModel.addColumn("Phone Number");
@@ -104,55 +108,12 @@ public class Staying {
         defaultTableModel.addRow(new Object[]{"1001","Davann CR","0967960968","12/12/2021","12/12/2023"});
         defaultTableModel.addRow(new Object[]{"1001","Davann CR","0967960968","12/12/2021","12/12/2023"});
         JTable table = new JTable(defaultTableModel);
-        table.setCellEditor(new TableCellEditor() {
-            @Override
-            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-                return null;
-            }
-
-            @Override
-            public Object getCellEditorValue() {
-                return null;
-            }
-
-            @Override
-            public boolean isCellEditable(EventObject anEvent) {
-                return false;
-            }
-
-            @Override
-            public boolean shouldSelectCell(EventObject anEvent) {
-                return false;
-            }
-
-            @Override
-            public boolean stopCellEditing() {
-                return false;
-            }
-
-            @Override
-            public void cancelCellEditing() {
-
-            }
-
-            @Override
-            public void addCellEditorListener(CellEditorListener l) {
-
-            }
-
-            @Override
-            public void removeCellEditorListener(CellEditorListener l) {
-
-            }
-        });
         table.setBackground(Color.white);
         table.setCellSelectionEnabled(false);
-        table.setCellSelectionEnabled(true);
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBackground(Color.white);
         tablePanel.add(scrollPane);
         panel.add(tablePanel);
-
         //button operators
         String[] operatorName={"Edit","Delete","Finish"};
         JButton[] operatorButton = new JButton[operatorName.length];
@@ -161,6 +122,37 @@ public class Staying {
             operatorButton[i].setBounds(150+150*i,535,100,30);
             panel.add(operatorButton[i]);
         }
+        //edit on click
+        operatorButton[0].addActionListener(e->{
+                int selectedRow = table.getSelectedRow();
+                rows.add(selectedRow);
+
+                if (selectedRow != -1) {
+                    if(operatorButton[0].getText().equalsIgnoreCase("Edit")) {
+                        defaultTableModel.setRowEditable(selectedRow, true);
+                        operatorButton[0].setText("Save");
+                    } else{
+                        defaultTableModel.setRowEditable(rows.get(0), false);
+                        operatorButton[0].setText("Edit");
+                        rows=new ArrayList<>();
+                    }
+                    table.setRowSelectionInterval(selectedRow, selectedRow);
+                    table.setEnabled(true);
+                    table.editCellAt(selectedRow, 0);
+                    Component editorComponent = table.getEditorComponent();
+                    if (editorComponent != null) {
+                        editorComponent.requestFocus();
+                    }
+                }
+        });
+        //delete on click
+        operatorButton[1].addActionListener(e->{
+            defaultTableModel.removeRow(table.getSelectedRow());
+        });
+        //finish on click
+        operatorButton[2].addActionListener(e->{
+            defaultTableModel.removeRow(table.getSelectedRow());
+        });
         return panel;
     }
 }
