@@ -1,16 +1,16 @@
 package Feature;
 
 import javax.swing.*;
-import javax.swing.event.CellEditorListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.EventObject;
 import java.util.concurrent.atomic.AtomicReference;
 
+import Provider.GeneratorIcon;
+import Provider.Model;
 import Provider.TableEditable;
 import com.toedter.calendar.JDateChooser;
 
@@ -19,6 +19,7 @@ public class Staying {
     private static AtomicReference<Object> objectSearch = new AtomicReference<>(null);
     private static TableEditable defaultTableModel;
     private static ArrayList<Integer> rows = new ArrayList<>();
+    private static ImageIcon iconTable;
     public static JPanel getPanel(){
         JPanel panel = new JPanel();
         panel.setLayout(null);
@@ -96,17 +97,17 @@ public class Staying {
         tablePanel.setBounds(50,100,600,400);
         tablePanel.setLayout(new GridLayout());
         tablePanel.setBackground(Color.white);
-       defaultTableModel = new TableEditable();
+        defaultTableModel = new TableEditable();
         defaultTableModel.addColumn("ID Card");
         defaultTableModel.addColumn("Full Name");
         defaultTableModel.addColumn("Phone Number");
         defaultTableModel.addColumn("Date Hire");
         defaultTableModel.addColumn("Date Expire");
-        defaultTableModel.addRow(new Object[]{"1001","Davann CR","0967960968","12/12/2021","12/12/2023"});
-        defaultTableModel.addRow(new Object[]{"1001","Davann CR","0967960968","12/12/2021","12/12/2023"});
-        defaultTableModel.addRow(new Object[]{"1001","Davann CR","0967960968","12/12/2021","12/12/2023"});
-        defaultTableModel.addRow(new Object[]{"1001","Davann CR","0967960968","12/12/2021","12/12/2023"});
-        defaultTableModel.addRow(new Object[]{"1001","Davann CR","0967960968","12/12/2021","12/12/2023"});
+        defaultTableModel.addRow(new Object[]{"1001","Davann Tet","0967960968","12/12/2021","12/12/2023"});
+        defaultTableModel.addRow(new Object[]{"1002","Davann Tet","0967960968","12/12/2021","12/12/2023"});
+        defaultTableModel.addRow(new Object[]{"1003","Davann Tet","0967960968","12/12/2021","12/12/2023"});
+        defaultTableModel.addRow(new Object[]{"1004","Davann Tet","0967960968","12/12/2021","12/12/2023"});
+        defaultTableModel.addRow(new Object[]{"1005","Davann Tet","0967960968","12/12/2021","12/12/2023"});
         JTable table = new JTable(defaultTableModel);
         table.setBackground(Color.white);
         table.setCellSelectionEnabled(false);
@@ -122,6 +123,19 @@ public class Staying {
             operatorButton[i].setBounds(150+150*i,535,100,30);
             panel.add(operatorButton[i]);
         }
+        //icons
+        JLabel iconLabel = new JLabel();
+        iconTable= GeneratorIcon.create("src/ICON/pointing.png",20,20);
+        iconLabel.setIcon(iconTable);
+        //iconLabel.setBounds(650,150,30,30);
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                iconLabel.setBounds(650,110+e.getY(),30,30);
+                super.mousePressed(e);
+            }
+        });
+        panel.add(iconLabel);
         //edit on click
         operatorButton[0].addActionListener(e->{
                 int selectedRow = table.getSelectedRow();
@@ -129,9 +143,14 @@ public class Staying {
 
                 if (selectedRow != -1) {
                     if(operatorButton[0].getText().equalsIgnoreCase("Edit")) {
+                        iconLabel.removeAll();
+                        iconLabel.setIcon(GeneratorIcon.create("src/ICON/writing.png",20,20));
                         defaultTableModel.setRowEditable(selectedRow, true);
                         operatorButton[0].setText("Save");
                     } else{
+                        iconLabel.removeAll();
+                        iconLabel.setIcon(iconTable= GeneratorIcon.create("src/ICON/pointing.png",20,20));
+
                         defaultTableModel.setRowEditable(rows.get(0), false);
                         operatorButton[0].setText("Edit");
                         rows=new ArrayList<>();
@@ -143,7 +162,11 @@ public class Staying {
                     if (editorComponent != null) {
                         editorComponent.requestFocus();
                     }
+
+
                 }
+                iconLabel.revalidate();
+                iconLabel.repaint();
         });
         //delete on click
         operatorButton[1].addActionListener(e->{

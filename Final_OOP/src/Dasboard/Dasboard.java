@@ -35,7 +35,7 @@ public class Dasboard extends Window {
     private void setFeaturePanel(){
         featurePanel = new JPanel();
         featurePanel.setSize(getWidth()/5, getHeight());
-        featurePanel.setBackground(new Color(242, 0, 116));
+        featurePanel.setBackground(Color.ORANGE);
         featurePanel.setLayout(null);
         //home icon
         ImageIcon homeIcon = GeneratorIcon.create("src/ICON/home.png",50,50);
@@ -94,11 +94,25 @@ public class Dasboard extends Window {
             }
         });
         //Exit Button
-        JButton btnExit = new JButton("Exit");
+        JPanel btnExit = new JPanel();
+        JLabel lblExit = new JLabel();
+        lblExit.setIcon(GeneratorIcon.create("src/ICON/shutdown.png",25,25));
+        lblExit.setHorizontalAlignment(SwingConstants.CENTER);
+        btnExit.setBackground(Color.RED);
         btnExit.setBounds(0,featurePanel.getHeight()-30,featurePanel.getWidth(),30);
         btnExit.setBorder(BorderFactory.createEmptyBorder());
-        btnExit.addActionListener(e->{
-            dispose();
+        btnExit.setLayout(new GridLayout());
+        lblExit.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnExit.add(lblExit);
+        btnExit.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                int x =JOptionPane.showConfirmDialog(null,"Are you sure?","Shutdown",JOptionPane.YES_NO_OPTION);
+                if(x ==0){
+                    dispose();
+                }
+                super.mousePressed(e);
+            }
         });
         featurePanel.add(btnExit);
         featurePanel.add(selectedLabel);
