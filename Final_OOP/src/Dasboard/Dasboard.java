@@ -88,7 +88,7 @@ public class Dasboard extends Window {
             public void mousePressed(MouseEvent e) {
                 selectedLabel.setBounds(0,label[3].getY()-5,featurePanel.getWidth(),40);
                 rightPanel.removeAll();
-                rightPanel.add(Staying.getPanel());
+                rightPanel.add(History.getPanel());
                 revalidate();
                 repaint();
             }

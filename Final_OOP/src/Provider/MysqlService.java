@@ -9,7 +9,7 @@ public class MysqlService {
     public static Connection getConnection(){
         if(con==null){
             try {
-                String password = "j2$#%9fjaa$#%Jfj";
+                String password = "";
                 String username = "root";
                 con= DriverManager.getConnection("jdbc:mysql://localhost:3306/HotelManagementSystem", username, password);
                 System.out.println("Success");

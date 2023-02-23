@@ -13,6 +13,5 @@ public class TableEditable extends DefaultTableModel {
     public void setRowEditable(int row, boolean editable) {
             editableRows[row] = editable;
     }
-
 }
 

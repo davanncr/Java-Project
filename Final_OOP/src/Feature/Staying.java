@@ -19,6 +19,7 @@ public class Staying {
     private static AtomicReference<Object> objectSearch = new AtomicReference<>(null);
     private static TableEditable defaultTableModel;
     private static ArrayList<Integer> rows = new ArrayList<>();
+    private static boolean verifySaving = true;
     private static ImageIcon iconTable;
     public static JPanel getPanel(){
         JPanel panel = new JPanel();
@@ -131,7 +132,9 @@ public class Staying {
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                iconLabel.setBounds(650,110+e.getY(),30,30);
+                if(verifySaving){
+                    iconLabel.setBounds(650,110+e.getY(),30,30);
+                }
                 super.mousePressed(e);
             }
         });
@@ -143,11 +146,13 @@ public class Staying {
 
                 if (selectedRow != -1) {
                     if(operatorButton[0].getText().equalsIgnoreCase("Edit")) {
+                        verifySaving=false;
                         iconLabel.removeAll();
                         iconLabel.setIcon(GeneratorIcon.create("src/ICON/writing.png",20,20));
                         defaultTableModel.setRowEditable(selectedRow, true);
                         operatorButton[0].setText("Save");
                     } else{
+                        verifySaving=true;
                         iconLabel.removeAll();
                         iconLabel.setIcon(iconTable= GeneratorIcon.create("src/ICON/pointing.png",20,20));
 
