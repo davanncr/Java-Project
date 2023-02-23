@@ -3,13 +3,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
 
 import Provider.Model;
+import Provider.MysqlService;
 import com.toedter.calendar.JDateChooser;
+import org.w3c.dom.css.Rect;
 
 public class Hire{
-
     public static JPanel getPanel(){
         JPanel panel = new JPanel();
         panel.setBackground(Color.white);
@@ -98,6 +102,7 @@ public class Hire{
         panel.add(lblHire);
         JDateChooser dateHire = new JDateChooser();
         dateHire.setBounds(50,270,600,30);
+        dateHire.setDate(new Date());
         dateHire.setRequestFocusEnabled(true);
         dateHire.setSelectableDateRange(new Date(),null);
         dateHire.setBorder(Model.roundedBorder);
@@ -111,13 +116,51 @@ public class Hire{
         JDateChooser dateExpire = new JDateChooser();
         dateExpire.setBounds(50,345,600,30);
         dateExpire.setRequestFocusEnabled(true);
+        dateExpire.setDate(new Date(new Date().getYear(),new Date().getMonth(),new Date().getDate()+1));
         dateExpire.setSelectableDateRange(new Date(),null);
         dateExpire.setBorder(Model.roundedBorder);
         panel.add(dateExpire);
+        //room
+        JLabel roomLabel = new JLabel("Room");
+        roomLabel.setBounds(50,390,600,30);
+        roomLabel.setFont(Model.font1);
+        panel.add(roomLabel);
+        JComboBox<String> room = new JComboBox<>();
+        room.setBounds(50,420,600,30);
+        try {
+            Statement statement = MysqlService.getConnection().createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT `room` FROM `roomdb` WHERE `status`=0 ORDER BY `room`");
+            while (resultSet.next()) {
+                room.addItem(resultSet.getString(1));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        panel.add(room);
         //Save
         Button btnSave = new Button("Submit");
         btnSave.setBackground(new Color(242, 0, 116));
-        btnSave.setBounds(300,425,100,30);
+        btnSave.setBounds(300,490,100,30);
+        btnSave.addActionListener(e->{
+            if(jtfPhone.getText().length()==9||jtfPhone.getText().length()==10){
+                if(jtfIDCard.getText().length()==9){
+                    if(jtfFemale.isSelected()||jtfMale.isSelected()){
+                        String[] separatedName = jtfFemale.getText().split(" ");
+                        if(separatedName.length==2){
+
+                        }else{
+                            JOptionPane.showMessageDialog(null,"Fullname is invalid","Fullname",JOptionPane.WARNING_MESSAGE);
+                        }
+                    }else{
+                        JOptionPane.showMessageDialog(null,"Don't forget choose sex","Sex",JOptionPane.WARNING_MESSAGE);
+                    }
+                }else{
+                    JOptionPane.showMessageDialog(null,"Length of ID Card must equal to 9","ID Card",JOptionPane.WARNING_MESSAGE);
+                }
+            }else{
+                JOptionPane.showMessageDialog(null,"Length of phone number must equal to 9 or 10","Phone Number",JOptionPane.WARNING_MESSAGE);
+            }
+        });
         panel.add(btnSave);
         return panel;
     }

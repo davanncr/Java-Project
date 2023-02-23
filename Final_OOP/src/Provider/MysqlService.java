@@ -11,7 +11,7 @@ public class MysqlService {
             try {
                 String password = "";
                 String username = "root";
-                con= DriverManager.getConnection("jdbc:mysql://localhost:3306/HotelManagementSystem", username, password);
+                con= DriverManager.getConnection("jdbc:mysql://localhost:9600/HMS", username, password);
                 System.out.println("Success");
             } catch (SQLException e) {
                 e.printStackTrace();
