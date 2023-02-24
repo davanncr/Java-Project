@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 
 import Provider.GeneratorIcon;
@@ -115,10 +116,11 @@ public class Staying {
         defaultTableModel.addColumn("Date Hire");
         defaultTableModel.addColumn("Date Expire");
 
-
+        Date date = new Date();
+        String expire_date = date.getDate()+"-"+(date.getMonth()+1)+"-"+(date.getYear()+1900);
         try {
             statement= MysqlService.getConnection().createStatement();
-            String commandSelect = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `status`=1 ORDER BY `room`";
+            String commandSelect = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `status`=1 AND `date_expire`!='"+expire_date+"' ORDER BY `room`";
             ResultSet resultSet = statement.executeQuery(commandSelect);
             while (resultSet.next()){
                 defaultTableModel.addRow(new Object[]{resultSet.getString(7),resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getString(5),resultSet.getString(6)});
@@ -238,12 +240,12 @@ public class Staying {
             String[] option={"id_card","phone","room","fullname","date_hire","date_expire"};
             String commandLine;
             if(filter.getSelectedIndex()<2){
-                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+searchNumber.getText().trim()+"' ORDER BY `room`";
+                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+searchNumber.getText().trim()+"' AND `date_expire`!='"+expire_date+"' ORDER BY `room`";
             }else if(filter.getSelectedIndex()==2||filter.getSelectedIndex()==3){
-                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+searchText.getText().trim()+"' ORDER BY `room`";
+                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+searchText.getText().trim()+"' AND `date_expire`!='"+expire_date+"' ORDER BY `room`";
             }else{
                 String dt = searchDate.getDate().getDate()+"-"+(searchDate.getDate().getMonth()+1)+"-"+(searchDate.getDate().getYear()+1900);
-                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+dt+"' ORDER BY `room`";
+                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+dt+"' AND `date_expire`!='"+expire_date+"' ORDER BY `room`";
             }
 
             defaultTableModel = new TableEditable();

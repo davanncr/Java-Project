@@ -120,7 +120,7 @@ public class Hire{
         dateExpire.setBounds(50,345,600,30);
         dateExpire.setRequestFocusEnabled(true);
         dateExpire.setDate(new Date(new Date().getYear(),new Date().getMonth(),new Date().getDate()+1));
-        dateExpire.setSelectableDateRange(new Date(),null);
+        dateExpire.setSelectableDateRange(new Date(new Date().getYear(),new Date().getMonth(),new Date().getDate()+1),null);
         dateExpire.setBorder(Model.roundedBorder);
         panel.add(dateExpire);
         //room

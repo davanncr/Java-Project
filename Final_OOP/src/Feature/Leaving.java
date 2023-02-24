@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Leaving {
@@ -114,11 +115,11 @@ public class Leaving {
         defaultTableModel.addColumn("Phone Number");
         defaultTableModel.addColumn("Date Hire");
         defaultTableModel.addColumn("Date Expire");
-
-
+        Date date = new Date();
+        String expire_date = date.getDate()+"-"+(date.getMonth()+1)+"-"+(date.getYear()+1900);
         try {
             statement= MysqlService.getConnection().createStatement();
-            String commandSelect = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `status`=1 ORDER BY `room`";
+            String commandSelect = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `status`=1 AND `date_expire`='"+expire_date+"' ORDER BY `room`";
             ResultSet resultSet = statement.executeQuery(commandSelect);
             while (resultSet.next()){
                 defaultTableModel.addRow(new Object[]{resultSet.getString(7),resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getString(5),resultSet.getString(6)});
@@ -134,7 +135,7 @@ public class Leaving {
         tablePanel.add(scrollPane);
         panel.add(tablePanel);
         //button operators
-        String[] operatorName={"Edit","Delete","Finish"};
+        String[] operatorName={"Edit","Delete","Leave"};
         JButton[] operatorButton = new JButton[operatorName.length];
         for (int i=0; i<operatorButton.length;i++){
             operatorButton[i] = new JButton(operatorName[i]);

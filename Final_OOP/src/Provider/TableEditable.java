@@ -12,7 +12,9 @@ public class TableEditable extends DefaultTableModel {
         return editableRows[row];
     }
     public void setRowEditable(int row, boolean editable) {
-            editableRows[row] = editable;
+            if(row!=-1){
+                editableRows[row] = editable;
+            }
     }
 }
 
