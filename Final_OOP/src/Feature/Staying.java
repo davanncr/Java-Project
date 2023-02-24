@@ -6,11 +6,15 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 import Provider.GeneratorIcon;
 import Provider.Model;
+import Provider.MysqlService;
 import Provider.TableEditable;
 import com.toedter.calendar.JDateChooser;
 
@@ -21,6 +25,8 @@ public class Staying {
     private static ArrayList<Integer> rows = new ArrayList<>();
     private static boolean verifySaving = true;
     private static ImageIcon iconTable;
+    private static Statement statement;
+    private static String roomName;
     public static JPanel getPanel(){
         JPanel panel = new JPanel();
         panel.setLayout(null);
@@ -99,16 +105,25 @@ public class Staying {
         tablePanel.setLayout(new GridLayout());
         tablePanel.setBackground(Color.white);
         defaultTableModel = new TableEditable();
+        defaultTableModel.addColumn("Room");
         defaultTableModel.addColumn("ID Card");
         defaultTableModel.addColumn("Full Name");
+        defaultTableModel.addColumn("Sex");
         defaultTableModel.addColumn("Phone Number");
         defaultTableModel.addColumn("Date Hire");
         defaultTableModel.addColumn("Date Expire");
-        defaultTableModel.addRow(new Object[]{"1001","Davann Tet","0967960968","12/12/2021","12/12/2023"});
-        defaultTableModel.addRow(new Object[]{"1002","Davann Tet","0967960968","12/12/2021","12/12/2023"});
-        defaultTableModel.addRow(new Object[]{"1003","Davann Tet","0967960968","12/12/2021","12/12/2023"});
-        defaultTableModel.addRow(new Object[]{"1004","Davann Tet","0967960968","12/12/2021","12/12/2023"});
-        defaultTableModel.addRow(new Object[]{"1005","Davann Tet","0967960968","12/12/2021","12/12/2023"});
+
+
+        try {
+            statement= MysqlService.getConnection().createStatement();
+            String commandSelect = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `status`=1 ORDER BY `room`";
+            ResultSet resultSet = statement.executeQuery(commandSelect);
+            while (resultSet.next()){
+                defaultTableModel.addRow(new Object[]{resultSet.getString(7),resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getString(5),resultSet.getString(6)});
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         JTable table = new JTable(defaultTableModel);
         table.setBackground(Color.white);
         table.setCellSelectionEnabled(false);
@@ -132,6 +147,7 @@ public class Staying {
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                iconLabel.setVisible(true);
                 if(verifySaving){
                     iconLabel.setBounds(650,110+e.getY(),30,30);
                 }
@@ -146,6 +162,7 @@ public class Staying {
 
                 if (selectedRow != -1) {
                     if(operatorButton[0].getText().equalsIgnoreCase("Edit")) {
+                        roomName=table.getValueAt(table.getSelectedRow(),0).toString();
                         verifySaving=false;
                         iconLabel.removeAll();
                         iconLabel.setIcon(GeneratorIcon.create("src/ICON/writing.png",20,20));
@@ -155,7 +172,6 @@ public class Staying {
                         verifySaving=true;
                         iconLabel.removeAll();
                         iconLabel.setIcon(iconTable= GeneratorIcon.create("src/ICON/pointing.png",20,20));
-
                         defaultTableModel.setRowEditable(rows.get(0), false);
                         operatorButton[0].setText("Edit");
                         rows=new ArrayList<>();
@@ -167,7 +183,18 @@ public class Staying {
                     if (editorComponent != null) {
                         editorComponent.requestFocus();
                     }
-
+                    if(verifySaving){
+                        try {
+                            int index = table.getSelectedRow();
+                            statement = MysqlService.getConnection().createStatement();
+                            String commandUpdate = "UPDATE `roomdb` set `id_card`='"+table.getModel().getValueAt(index,1)+"',`fullname`='"+table.getModel().getValueAt(index,2)+"',`sex`='"+table.getModel().getValueAt(index,3)+"',`phone`='"+table.getModel().getValueAt(index,4)+"',`date_hire`='"+table.getModel().getValueAt(index,5)+"',`date_expire`='"+table.getModel().getValueAt(index,6)+"' WHERE `room`='"+roomName+"';";
+                            table.setValueAt(roomName,index,0);
+                            //System.out.println(commandUpdate);
+                            statement.executeUpdate(commandUpdate);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
 
                 }
                 iconLabel.revalidate();
@@ -176,10 +203,26 @@ public class Staying {
         //delete on click
         operatorButton[1].addActionListener(e->{
             defaultTableModel.removeRow(table.getSelectedRow());
+            try {
+                statement = MysqlService.getConnection().createStatement();
+                String commandUpdate = "UPDATE `roomdb` SET `id_card` = '', `fullname` = '', `sex` = '', `phone` = '', `date_hire` = '', `date_expire` = '', `number_day` = NULL, `total_price` = NULL, `status` = 0 WHERE `room` = '"+roomName+"';";
+                //statement.executeUpdate(commandUpdate);
+                iconLabel.setVisible(false);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         });
         //finish on click
         operatorButton[2].addActionListener(e->{
             defaultTableModel.removeRow(table.getSelectedRow());
+            try {
+                statement = MysqlService.getConnection().createStatement();
+                String commandUpdate = "UPDATE `roomdb` SET `id_card` = '', `fullname` = '', `sex` = '', `phone` = '', `date_hire` = '', `date_expire` = '', `number_day` = NULL, `total_price` = NULL, `status` = 0 WHERE `room` = '"+roomName+"';";
+                //statement.executeUpdate(commandUpdate);
+                iconLabel.setVisible(false);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         });
         return panel;
     }

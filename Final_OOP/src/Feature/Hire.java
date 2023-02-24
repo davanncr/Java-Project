@@ -6,14 +6,18 @@ import java.awt.event.KeyEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 
 import Provider.Model;
 import Provider.MysqlService;
 import com.toedter.calendar.JDateChooser;
-import org.w3c.dom.css.Rect;
 
 public class Hire{
+    private static Statement statement;
+    private static int numberDays;
+    private static double price;
     public static JPanel getPanel(){
         JPanel panel = new JPanel();
         panel.setBackground(Color.white);
@@ -111,7 +115,6 @@ public class Hire{
         JLabel lblExpire = new JLabel("Date Expire");
         lblExpire.setBounds(50,320,150,25);
         lblExpire.setFont(Model.font1);
-
         panel.add(lblExpire);
         JDateChooser dateExpire = new JDateChooser();
         dateExpire.setBounds(50,345,600,30);
@@ -139,15 +142,49 @@ public class Hire{
         panel.add(room);
         //Save
         Button btnSave = new Button("Submit");
+
         btnSave.setBackground(new Color(242, 0, 116));
         btnSave.setBounds(300,490,100,30);
         btnSave.addActionListener(e->{
             if(jtfPhone.getText().length()==9||jtfPhone.getText().length()==10){
                 if(jtfIDCard.getText().length()==9){
                     if(jtfFemale.isSelected()||jtfMale.isSelected()){
-                        String[] separatedName = jtfFemale.getText().split(" ");
+                        String[] separatedName = jtfFullname.getText().split(" ");
                         if(separatedName.length==2){
-
+                            try {
+                                statement=MysqlService.getConnection().createStatement();
+                                numberDays = (int)((dateExpire.getDate().getTime()-dateHire.getDate().getTime())/(24*60*60*1000));
+                                String roomName = Objects.requireNonNull(room.getSelectedItem()).toString();
+                                ResultSet roomPrice = statement.executeQuery("SELECT `price` FROM `priceroom` WHERE `floor`='"+roomName.charAt(0)+"' limit 1");
+                                double prices=0;
+                                while (roomPrice.next()){
+                                    prices = roomPrice.getDouble(1);
+                                }
+                                prices = prices*numberDays;
+                                String gender = jtfFemale.isSelected()?"Female":"Male";
+                                String hire_date = dateHire.getDate().getDate()+"-"+(dateHire.getDate().getMonth()+1)+"-"+(dateHire.getDate().getYear()+1900);
+                                String expire_date = dateExpire.getDate().getDate()+"-"+(dateExpire.getDate().getMonth()+1)+"-"+(dateExpire.getDate().getYear()+1900);
+                                String commandUpdate = "UPDATE `roomdb` SET `id_card` = '"+jtfIDCard.getText().trim()+"', `fullname` = '"+jtfFullname.getText().trim()+"', `sex` = '"+gender+"', `phone` = '"+jtfPhone.getText().trim()+"', `date_hire` = '"+hire_date+"', `date_expire` = '"+expire_date+"', `number_day` = "+numberDays+", `total_price` = "+prices+", `status` = 1 WHERE `room` = '"+roomName+"';";
+                                int option = JOptionPane.showConfirmDialog(null,"Total: "+prices+"$","Total price",JOptionPane.YES_NO_OPTION);
+                                if(option == 0){
+                                    int result = statement.executeUpdate(commandUpdate);
+                                    jtfFullname.setText("");
+                                    jtfFemale.setSelected(false);
+                                    jtfMale.setSelected(false);
+                                    jtfIDCard.setText("");
+                                    jtfPhone.setText("");
+                                    dateHire.setDate(new Date());
+                                    room.removeItemAt(room.getSelectedIndex());
+                                    dateExpire.setDate(new Date(new Date().getYear(),new Date().getMonth(),new Date().getDate()+1));
+                                    if(result ==1){
+                                        JOptionPane.showMessageDialog(null,"Submit is successfully","Submission",JOptionPane.INFORMATION_MESSAGE);
+                                    }else{
+                                        JOptionPane.showMessageDialog(null,"Submit is not successfully","Submission",JOptionPane.ERROR);
+                                    }
+                                }
+                            } catch (SQLException ex) {
+                                ex.printStackTrace();
+                            }
                         }else{
                             JOptionPane.showMessageDialog(null,"Fullname is invalid","Fullname",JOptionPane.WARNING_MESSAGE);
                         }

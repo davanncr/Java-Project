@@ -8,6 +8,7 @@ public class TableEditable extends DefaultTableModel {
     }
     @Override
     public boolean isCellEditable(int row, int column) {
+        //return isCellEditable(row, column);
         return editableRows[row];
     }
     public void setRowEditable(int row, boolean editable) {
