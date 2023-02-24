@@ -13,13 +13,12 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 import Provider.GeneratorIcon;
-import Provider.Model;
 import Provider.MysqlService;
 import Provider.TableEditable;
 import com.toedter.calendar.JDateChooser;
 
 public class Staying {
-    private static int leangNumber=0;
+    private static int leangNumber=8;
     private static AtomicReference<Object> objectSearch = new AtomicReference<>(null);
     private static TableEditable defaultTableModel;
     private static ArrayList<Integer> rows = new ArrayList<>();
@@ -27,6 +26,8 @@ public class Staying {
     private static ImageIcon iconTable;
     private static Statement statement;
     private static String roomName;
+    private static JScrollPane scrollPane;
+    private static JTable table;
     public static JPanel getPanel(){
         JPanel panel = new JPanel();
         panel.setLayout(null);
@@ -35,6 +36,7 @@ public class Staying {
         JComboBox<String> filter = new JComboBox<String>();
         filter.addItem("ID Card");
         filter.addItem("Phone Number");
+        filter.addItem("Room");
         filter.addItem("Full Name");
         filter.addItem("Date Hire");
         filter.addItem("Date Expire");
@@ -53,7 +55,6 @@ public class Staying {
             JTextField searchText = new JTextField();
             //search by number
             JTextField searchNumber = new JTextField();
-
             searchNumber.addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyTyped(KeyEvent e) {
@@ -67,7 +68,8 @@ public class Staying {
                     }
                 }
             });
-            searchPanel.add(searchText);
+            searchPanel.add(searchNumber);
+            filter.setSelectedIndex(0);
         filter.addItemListener(e->{
             if(filter.getSelectedIndex()<2){
                 if(searchNumber.getText().trim().length()>9){
@@ -79,7 +81,7 @@ public class Staying {
                 objectSearch.set(searchNumber);
                 searchPanel.revalidate();
                 searchPanel.repaint();
-            }else if(filter.getSelectedIndex()==2){
+            }else if(filter.getSelectedIndex()==2||filter.getSelectedIndex()==3){
                 searchPanel.removeAll();
                 searchPanel.add(searchText);
                 objectSearch.set(searchText);
@@ -124,10 +126,10 @@ public class Staying {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        JTable table = new JTable(defaultTableModel);
+        table = new JTable(defaultTableModel);
         table.setBackground(Color.white);
         table.setCellSelectionEnabled(false);
-        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane = new JScrollPane(table);
         scrollPane.setBackground(Color.white);
         tablePanel.add(scrollPane);
         panel.add(tablePanel);
@@ -202,27 +204,76 @@ public class Staying {
         });
         //delete on click
         operatorButton[1].addActionListener(e->{
-            defaultTableModel.removeRow(table.getSelectedRow());
             try {
                 statement = MysqlService.getConnection().createStatement();
                 String commandUpdate = "UPDATE `roomdb` SET `id_card` = '', `fullname` = '', `sex` = '', `phone` = '', `date_hire` = '', `date_expire` = '', `number_day` = NULL, `total_price` = NULL, `status` = 0 WHERE `room` = '"+roomName+"';";
-                //statement.executeUpdate(commandUpdate);
+                statement.executeUpdate(commandUpdate);
                 iconLabel.setVisible(false);
+                defaultTableModel.removeRow(table.getSelectedRow());
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
         });
         //finish on click
         operatorButton[2].addActionListener(e->{
-            defaultTableModel.removeRow(table.getSelectedRow());
+
             try {
-                statement = MysqlService.getConnection().createStatement();
+                int indexRow = table.getSelectedRow();
+                String roomName = table.getValueAt(indexRow,0).toString().trim();
+                ResultSet result = statement.executeQuery("SELECT * FROM `roomdb` WHERE `room`='"+roomName+"' LIMIT 1");
+                result.next();
+                String commandInsert = "INSERT INTO `history` (`room`, `id_card`, `fullname`, `sex`, `phone`, `date_hire`, `date_expire`, `number_day`, `total_price`) VALUES ('"+result.getString(1)+"', '"+result.getString(2)+"', '"+result.getString(3)+"', '"+result.getString(4)+"', '"+result.getString(5)+"', '"+result.getString(6)+"', '"+result.getString(7)+"',"+result.getInt(8)+","+result.getDouble(9)+");";
                 String commandUpdate = "UPDATE `roomdb` SET `id_card` = '', `fullname` = '', `sex` = '', `phone` = '', `date_hire` = '', `date_expire` = '', `number_day` = NULL, `total_price` = NULL, `status` = 0 WHERE `room` = '"+roomName+"';";
-                //statement.executeUpdate(commandUpdate);
+                statement = MysqlService.getConnection().createStatement();
+                statement.executeUpdate(commandUpdate);
+                statement.executeUpdate(commandInsert);
                 iconLabel.setVisible(false);
+                defaultTableModel.removeRow(table.getSelectedRow());
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
+        });
+        //searching
+        btnSearch.addActionListener(e->{
+            String[] option={"id_card","phone","room","fullname","date_hire","date_expire"};
+            String commandLine;
+            if(filter.getSelectedIndex()<2){
+                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+searchNumber.getText().trim()+"' ORDER BY `room`";
+            }else if(filter.getSelectedIndex()==2||filter.getSelectedIndex()==3){
+                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+searchText.getText().trim()+"' ORDER BY `room`";
+            }else{
+                String dt = searchDate.getDate().getDate()+"-"+(searchDate.getDate().getMonth()+1)+"-"+(searchDate.getDate().getYear()+1900);
+                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+dt+"' ORDER BY `room`";
+            }
+
+            defaultTableModel = new TableEditable();
+            defaultTableModel.addColumn("Room");
+            defaultTableModel.addColumn("ID Card");
+            defaultTableModel.addColumn("Full Name");
+            defaultTableModel.addColumn("Sex");
+            defaultTableModel.addColumn("Phone Number");
+            defaultTableModel.addColumn("Date Hire");
+            defaultTableModel.addColumn("Date Expire");
+            try {
+                statement= MysqlService.getConnection().createStatement();
+                ResultSet resultSet = statement.executeQuery(commandLine);
+                while (resultSet.next()){
+                    System.out.println(resultSet.getString(7));
+                    defaultTableModel.addRow(new Object[]{resultSet.getString(7),resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getString(5),resultSet.getString(6)});
+                }
+                tablePanel.removeAll();
+                table = new JTable(defaultTableModel);
+                table.setBackground(Color.white);
+                table.setCellSelectionEnabled(false);
+                scrollPane = new JScrollPane(table);
+                scrollPane.setBackground(Color.white);
+                tablePanel.add(scrollPane);
+                tablePanel.revalidate();
+                tablePanel.repaint();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+
         });
         return panel;
     }
