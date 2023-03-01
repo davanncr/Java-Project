@@ -116,10 +116,10 @@ public class Leaving {
         defaultTableModel.addColumn("Date Hire");
         defaultTableModel.addColumn("Date Expire");
         Date date = new Date();
-        String expire_date = date.getDate()+"-"+(date.getMonth()+1)+"-"+(date.getYear()+1900);
+        java.sql.Date expire_date = new java.sql.Date(date.getTime());
         try {
             statement= MysqlService.getConnection().createStatement();
-            String commandSelect = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `status`=1 AND `date_expire`='"+expire_date+"' ORDER BY `room`";
+            String commandSelect = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `status`=1 AND `date_expire`<=DATE('"+expire_date+"') ORDER BY `room`";
             ResultSet resultSet = statement.executeQuery(commandSelect);
             while (resultSet.next()){
                 defaultTableModel.addRow(new Object[]{resultSet.getString(7),resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getString(5),resultSet.getString(6)});
@@ -129,7 +129,6 @@ public class Leaving {
         }
         table = new JTable(defaultTableModel);
         table.setBackground(Color.white);
-        table.setCellSelectionEnabled(false);
         scrollPane = new JScrollPane(table);
         scrollPane.setBackground(Color.white);
         tablePanel.add(scrollPane);
@@ -205,6 +204,7 @@ public class Leaving {
         });
         //delete on click
         operatorButton[1].addActionListener(e->{
+            roomName = table.getModel().getValueAt(table.getSelectedRow(),0).toString();
             try {
                 statement = MysqlService.getConnection().createStatement();
                 String commandUpdate = "UPDATE `roomdb` SET `id_card` = '', `fullname` = '', `sex` = '', `phone` = '', `date_hire` = '', `date_expire` = '', `number_day` = NULL, `total_price` = NULL, `status` = 0 WHERE `room` = '"+roomName+"';";
@@ -219,12 +219,13 @@ public class Leaving {
         operatorButton[2].addActionListener(e->{
 
             try {
+                roomName = table.getModel().getValueAt(table.getSelectedRow(),0).toString();
                 int indexRow = table.getSelectedRow();
                 String roomName = table.getValueAt(indexRow,0).toString().trim();
                 ResultSet result = statement.executeQuery("SELECT * FROM `roomdb` WHERE `room`='"+roomName+"' LIMIT 1");
                 result.next();
                 String commandInsert = "INSERT INTO `history` (`room`, `id_card`, `fullname`, `sex`, `phone`, `date_hire`, `date_expire`, `number_day`, `total_price`) VALUES ('"+result.getString(1)+"', '"+result.getString(2)+"', '"+result.getString(3)+"', '"+result.getString(4)+"', '"+result.getString(5)+"', '"+result.getString(6)+"', '"+result.getString(7)+"',"+result.getInt(8)+","+result.getDouble(9)+");";
-                String commandUpdate = "UPDATE `roomdb` SET `id_card` = '', `fullname` = '', `sex` = '', `phone` = '', `date_hire` = '', `date_expire` = '', `number_day` = NULL, `total_price` = NULL, `status` = 0 WHERE `room` = '"+roomName+"';";
+                String commandUpdate = "UPDATE `roomdb` SET `id_card` = '', `fullname` = '', `sex` = '', `phone` = '', `date_hire` = NULL, `date_expire` = NULL, `number_day` = NULL, `total_price` = NULL, `status` = 0 WHERE `room` = '"+roomName+"';";
                 statement = MysqlService.getConnection().createStatement();
                 statement.executeUpdate(commandUpdate);
                 statement.executeUpdate(commandInsert);
@@ -239,14 +240,13 @@ public class Leaving {
             String[] option={"id_card","phone","room","fullname","date_hire","date_expire"};
             String commandLine;
             if(filter.getSelectedIndex()<2){
-                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+searchNumber.getText().trim()+"' ORDER BY `room`";
+                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+searchNumber.getText().trim()+"' AND `date_expire`<=DATE('"+expire_date+"') ORDER BY `room`";
             }else if(filter.getSelectedIndex()==2||filter.getSelectedIndex()==3){
-                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+searchText.getText().trim()+"' ORDER BY `room`";
+                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+searchText.getText().trim()+"' AND `date_expire`<=DATE('"+expire_date+"') ORDER BY `room`";
             }else{
                 String dt = searchDate.getDate().getDate()+"-"+(searchDate.getDate().getMonth()+1)+"-"+(searchDate.getDate().getYear()+1900);
-                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+dt+"' ORDER BY `room`";
+                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+dt+"' AND `date_expire`<=DATE('"+expire_date+"') ORDER BY `room`";
             }
-
             defaultTableModel = new TableEditable();
             defaultTableModel.addColumn("Room");
             defaultTableModel.addColumn("ID Card");
@@ -259,13 +259,12 @@ public class Leaving {
                 statement= MysqlService.getConnection().createStatement();
                 ResultSet resultSet = statement.executeQuery(commandLine);
                 while (resultSet.next()){
-                    System.out.println(resultSet.getString(7));
                     defaultTableModel.addRow(new Object[]{resultSet.getString(7),resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getString(5),resultSet.getString(6)});
                 }
                 tablePanel.removeAll();
                 table = new JTable(defaultTableModel);
                 table.setBackground(Color.white);
-                table.setCellSelectionEnabled(false);
+
                 scrollPane = new JScrollPane(table);
                 scrollPane.setBackground(Color.white);
                 tablePanel.add(scrollPane);
@@ -274,7 +273,6 @@ public class Leaving {
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-
         });
         return panel;
     }

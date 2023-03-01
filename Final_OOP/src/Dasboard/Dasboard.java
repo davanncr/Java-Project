@@ -1,6 +1,7 @@
 package Dasboard;
 
 import Feature.*;
+import Feature.System;
 import Provider.GeneratorIcon;
 import Provider.Model;
 import Provider.Window;
@@ -43,8 +44,8 @@ public class Dasboard extends Window {
         homeLabel.setBounds(30,10,60,60);
         featurePanel.add(homeLabel);
         //label
-        String[] labelTitle ={"Hire","Staying","Leaving","History"};
-        String[] iconSrc ={"hire.png","staying.png","leaving.png","history.png"};
+        String[] labelTitle ={"Hire","Staying","Leaving","History","System"};
+        String[] iconSrc ={"hire.png","staying.png","leaving.png","history.png","setting.png"};
         JLabel[] label = new JLabel[labelTitle.length];
         for(int i=0; i<label.length;i++){
             label[i] = new JLabel(labelTitle[i],GeneratorIcon.create("src/ICON/"+iconSrc[i],25,20),SwingConstants.LEFT);
@@ -89,6 +90,16 @@ public class Dasboard extends Window {
                 selectedLabel.setBounds(0,label[3].getY()-5,featurePanel.getWidth(),40);
                 rightPanel.removeAll();
                 rightPanel.add(History.getPanel());
+                revalidate();
+                repaint();
+            }
+        });
+        label[4].addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                selectedLabel.setBounds(0,label[4].getY()-5,featurePanel.getWidth(),40);
+                rightPanel.removeAll();
+                rightPanel.add(System.getPanel());
                 revalidate();
                 repaint();
             }

@@ -6,7 +6,6 @@ import java.awt.event.KeyEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 
@@ -17,7 +16,14 @@ import com.toedter.calendar.JDateChooser;
 public class Hire{
     private static Statement statement;
     private static int numberDays;
-    private static double price;
+    private static JTextField jtfFullname = new JTextField();
+    private static JRadioButton jtfFemale = new JRadioButton("Female");
+    private static JRadioButton jtfMale = new JRadioButton("Male");
+    private static JTextField jtfPhone = new JTextField();
+    private static JTextField jtfIDCard = new JTextField();
+    private static JDateChooser dateHire = new JDateChooser(new Date());
+    private static JDateChooser dateExpire = new JDateChooser(new Date(new Date().getYear(),new Date().getMonth(),new Date().getDate()+1));
+    private static JComboBox<String> room = new JComboBox<>();
     public static JPanel getPanel(){
         JPanel panel = new JPanel();
         panel.setBackground(Color.white);
@@ -27,24 +33,25 @@ public class Hire{
         lblFullname.setBounds(50,20,100,25);
         lblFullname.setFont(Model.font1);
         panel.add(lblFullname);
-        JTextField jtfFullname = new JTextField();
+
         jtfFullname.setBounds(50,45,600,30);
         jtfFullname.setRequestFocusEnabled(true);
         jtfFullname.setHorizontalAlignment(SwingConstants.CENTER);
         jtfFullname.setBorder(Model.roundedBorder);
+
         panel.add(jtfFullname);
         //Gender
-        JLabel lblGender = new JLabel("Choose gender: ");
-        JRadioButton jtfFemale = new JRadioButton("Female");
+
         ButtonGroup groupGender = new ButtonGroup();
         jtfFemale.setBounds(70,80,80,25);
         jtfFemale.setBackground(Color.white);
         jtfFemale.setFont(Model.font2);
         panel.add(jtfFemale);
-        JRadioButton jtfMale = new JRadioButton("Male");
+
         jtfMale.setBounds(150,80,100,25);
         jtfMale.setBackground(Color.white);
         jtfMale.setFont(Model.font2);
+
         groupGender.add(jtfMale);
         groupGender.add(jtfFemale);
         panel.add(jtfMale);
@@ -54,7 +61,7 @@ public class Hire{
         lblPhone.setBounds(50,110,150,25);
         lblPhone.setFont(Model.font1);
         panel.add(lblPhone);
-        JTextField jtfPhone = new JTextField();
+
         jtfPhone.setBounds(50,135,600,30);
         jtfPhone.setRequestFocusEnabled(true);
         jtfPhone.setHorizontalAlignment(SwingConstants.CENTER);
@@ -70,7 +77,6 @@ public class Hire{
                     }
                     super.keyTyped(e);
                 }
-
             }
         });
         panel.add(jtfPhone);
@@ -79,7 +85,7 @@ public class Hire{
         lblIDCard.setBounds(50,175,150,25);
         lblIDCard.setFont(Model.font1);
         panel.add(lblIDCard);
-        JTextField jtfIDCard = new JTextField();
+
         jtfIDCard.setBounds(50,200,600,30);
         jtfIDCard.setRequestFocusEnabled(true);
         jtfIDCard.setHorizontalAlignment(SwingConstants.CENTER);
@@ -104,9 +110,9 @@ public class Hire{
         lblHire.setBounds(50,245,150,25);
         lblHire.setFont(Model.font1);
         panel.add(lblHire);
-        JDateChooser dateHire = new JDateChooser();
+
         dateHire.setBounds(50,270,600,30);
-        dateHire.setDate(new Date());
+
         dateHire.setRequestFocusEnabled(true);
         dateHire.setSelectableDateRange(new Date(),null);
         dateHire.setBorder(Model.roundedBorder);
@@ -116,10 +122,10 @@ public class Hire{
         lblExpire.setBounds(50,320,150,25);
         lblExpire.setFont(Model.font1);
         panel.add(lblExpire);
-        JDateChooser dateExpire = new JDateChooser();
+
         dateExpire.setBounds(50,345,600,30);
         dateExpire.setRequestFocusEnabled(true);
-        dateExpire.setDate(new Date(new Date().getYear(),new Date().getMonth(),new Date().getDate()+1));
+
         dateExpire.setSelectableDateRange(new Date(new Date().getYear(),new Date().getMonth(),new Date().getDate()+1),null);
         dateExpire.setBorder(Model.roundedBorder);
         panel.add(dateExpire);
@@ -128,7 +134,7 @@ public class Hire{
         roomLabel.setBounds(50,390,600,30);
         roomLabel.setFont(Model.font1);
         panel.add(roomLabel);
-        JComboBox<String> room = new JComboBox<>();
+
         room.setBounds(50,420,600,30);
         try {
             Statement statement = MysqlService.getConnection().createStatement();
@@ -162,8 +168,8 @@ public class Hire{
                                 }
                                 prices = prices*numberDays;
                                 String gender = jtfFemale.isSelected()?"Female":"Male";
-                                String hire_date = dateHire.getDate().getDate()+"-"+(dateHire.getDate().getMonth()+1)+"-"+(dateHire.getDate().getYear()+1900);
-                                String expire_date = dateExpire.getDate().getDate()+"-"+(dateExpire.getDate().getMonth()+1)+"-"+(dateExpire.getDate().getYear()+1900);
+                                java.sql.Date hire_date = new java.sql.Date(dateHire.getDate().getTime());
+                                java.sql.Date expire_date = new java.sql.Date(dateExpire.getDate().getTime());
                                 String commandUpdate = "UPDATE `roomdb` SET `id_card` = '"+jtfIDCard.getText().trim()+"', `fullname` = '"+jtfFullname.getText().trim()+"', `sex` = '"+gender+"', `phone` = '"+jtfPhone.getText().trim()+"', `date_hire` = '"+hire_date+"', `date_expire` = '"+expire_date+"', `number_day` = "+numberDays+", `total_price` = "+prices+", `status` = 1 WHERE `room` = '"+roomName+"';";
                                 int option = JOptionPane.showConfirmDialog(null,"Total: "+prices+"$","Total price",JOptionPane.YES_NO_OPTION);
                                 if(option == 0){

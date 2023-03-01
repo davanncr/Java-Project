@@ -16,5 +16,6 @@ public class TableEditable extends DefaultTableModel {
                 editableRows[row] = editable;
             }
     }
+
 }
 
