@@ -179,6 +179,8 @@ public class Hire{
                                     jtfMale.setSelected(false);
                                     jtfIDCard.setText("");
                                     jtfPhone.setText("");
+                                    jtfFemale.setSelected(false);
+                                    jtfMale.setSelected(false);
                                     dateHire.setDate(new Date());
                                     room.removeItemAt(room.getSelectedIndex());
                                     dateExpire.setDate(new Date(new Date().getYear(),new Date().getMonth(),new Date().getDate()+1));
