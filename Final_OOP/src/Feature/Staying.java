@@ -274,30 +274,16 @@ public class Staying {
                 java.sql.Date dt = new java.sql.Date(searchDate.getDate().getTime());
                 commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+dt+"' AND `date_expire`>DATE('"+expire_date+"') AND `date_hire`<=DATE('"+expire_date+"') ORDER BY `room`";
             }
-
-            defaultTableModel = new TableEditable();
-            defaultTableModel.addColumn("Room");
-            defaultTableModel.addColumn("ID Card");
-            defaultTableModel.addColumn("Full Name");
-            defaultTableModel.addColumn("Sex");
-            defaultTableModel.addColumn("Phone Number");
-            defaultTableModel.addColumn("Date Hire");
-            defaultTableModel.addColumn("Date Expire");
+                while (defaultTableModel.getRowCount()>0){
+                    defaultTableModel.removeRow(0);
+                }
             try {
                 statement= MysqlService.getConnection().createStatement();
                 ResultSet resultSet = statement.executeQuery(commandLine);
                 while (resultSet.next()){
                     defaultTableModel.addRow(new Object[]{resultSet.getString(7),resultSet.getString(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getString(5),resultSet.getString(6)});
                 }
-                tablePanel.removeAll();
-                table = new JTable(defaultTableModel);
-                table.setBackground(Color.white);
-                table.setCellSelectionEnabled(false);
-                scrollPane = new JScrollPane(table);
-                scrollPane.setBackground(Color.white);
-                tablePanel.add(scrollPane);
-                tablePanel.revalidate();
-                tablePanel.repaint();
+
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }

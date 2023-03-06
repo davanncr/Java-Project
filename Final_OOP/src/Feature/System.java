@@ -24,8 +24,10 @@ public class System {
     private static JComboBox<String> optionRoom;
     private static Font font = new Font("Arial",Font.BOLD,20);
     private static JTextField jtfNewFloor = new JTextField();
-    private static JTextField jtfNumberFloor = new JTextField();
+    private static JTextField jtfNumberRoom = new JTextField();
+
     public static JPanel getPanel(){
+        JComboBox<String> listFloors =new JComboBox<>();
         JPanel systemPrice = new JPanel();
         JPanel systemReport = new JPanel();
         JPanel tablePanel = new JPanel();
@@ -34,6 +36,7 @@ public class System {
         panel.setBackground(Color.WHITE);
         //System Price
         systemPrice.setLayout(null);
+        systemPrice.setBackground(Color.WHITE);
         JButton buttonSet = new JButton("Update");
             //title
                 JLabel lblUpdatePrice = new JLabel("System Price");
@@ -59,7 +62,7 @@ public class System {
             String commandSelect = "SELECT * FROM `priceroom`;";
             ResultSet resultSet = statement.executeQuery(commandSelect);
             while (resultSet.next()) {
-                //optionRoom.addItem(resultSet.getString(1));
+                listFloors.addItem(resultSet.getString(1));
                 tableModel.addRow(new Object[]{resultSet.getString(1),resultSet.getDouble(2)});
             }
         } catch (SQLException e) {
@@ -172,26 +175,104 @@ public class System {
                 systemReport.add(jtfNewFloor);
                 systemReport.add(lblTitleInputNewFloor);
                 //input number floor
-                JLabel lblTitleInputNumberFloor = new JLabel("Number of Floor");
+                JLabel lblTitleInputNumberFloor = new JLabel("Number of Room");
                 lblTitleInputNumberFloor.setBounds(30,90,200,30);
-                jtfNumberFloor.setBounds(130,90,200,25);
-                systemReport.add(jtfNumberFloor);
+                jtfNumberRoom.setBounds(130,90,200,25);
+                jtfNumberRoom.addKeyListener(new KeyAdapter() {
+                    @Override
+                    public void keyTyped(KeyEvent e) {
+                        if(!Character.isDigit(e.getKeyChar())){
+                            e.consume();
+                        }
+                        super.keyTyped(e);
+                    }
+                });
+                systemReport.add(jtfNumberRoom);
                 systemReport.add(lblTitleInputNumberFloor);
                 //button Add Floor
                 JButton btnAddMoreFloor = new JButton("Add More Floor");
-                btnAddMoreFloor.setBounds(120,130,120,30);
+                btnAddMoreFloor.setBounds(170,130,120,30);
                 btnAddMoreFloor.addActionListener(e->{
                     int x =JOptionPane.showConfirmDialog(null,"Are you sure?","Add More Floor",JOptionPane.YES_NO_OPTION);
                     if(x == 0){
-
+                        try {
+                            statement = connection.createStatement();
+                            int numRoom = Integer.parseInt(jtfNumberRoom.getText());
+                            String nameFloor = jtfNewFloor.getText().toUpperCase();
+                            String commandLine="INSERT INTO `roomdb` VALUES ";
+                            for(int i = 1;i<=numRoom;i++){
+                                if(i<10&&i<numRoom){
+                                    commandLine +="('"+nameFloor+"000"+i+"',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0),";
+                                }else if(i>=10&&i<numRoom){
+                                    commandLine +="('"+nameFloor+"00"+i+"',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0),";
+                                }else if(i==numRoom&&i>=10){
+                                    commandLine +="('"+nameFloor+"00"+i+"',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0);";
+                                }else if(i==numRoom&&i<10){
+                                    commandLine +="('"+nameFloor+"000"+i+"',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0);";
+                                }
+                            }
+                            int success = statement.executeUpdate(commandLine);
+                            commandLine = "INSERT INTO `priceroom` VALUES ('"+nameFloor+"',0)";
+                            int success1 = statement.executeUpdate(commandLine);
+                            if(success==numRoom &&success1==1){
+                                tableModel.addRow(new Object[]{nameFloor,0.00});
+                                listFloors.addItem(nameFloor);
+                                jtfNumberRoom.setText("");
+                                jtfNewFloor.setText("");
+                                JOptionPane.showMessageDialog(null,"Add successfully 👌👌👌");
+                            }else{
+                                JOptionPane.showMessageDialog(null,"Add not successfully ❌❌❌");
+                            }
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }else{
 
                     }
                 });
                 systemReport.add(btnAddMoreFloor);
-        //System Report
-            systemReport.setLayout(null);
+        //remove floor
+            //title
+            JLabel lblRemoveFloor = new JLabel("Remove Floor");
+            lblRemoveFloor.setFont(font);
+            lblRemoveFloor.setBounds(450,10,200,30);
+            systemReport.add(lblRemoveFloor);
+            //list of floor
+            JLabel blbListFloor  = new JLabel("Choose Floor");
+            blbListFloor.setBounds(370,50,120,30);
+            systemReport.add(blbListFloor);
+            listFloors.setBounds(450,50,200,30);
+            systemReport.add(listFloors);
+            //button remove floor
+            JButton btnRemoveFloor = new JButton("Remove");
+            btnRemoveFloor.setBounds(495,100,120,30);
+            systemReport.add(btnRemoveFloor);
+            btnRemoveFloor.addActionListener(e->{
+                int x =JOptionPane.showConfirmDialog(null,"Are you sure?","Add More Floor",JOptionPane.YES_NO_OPTION);
+                if(x == 0){
+                    try {
+                        statement = connection.createStatement();
+                        String commandLine1 = "DELETE FROM `roomdb` WHERE `room` LIKE '"+listFloors.getSelectedItem()+"%';";
+                        String commandLine2 = "DELETE FROM `priceroom` WHERE `floor`='"+listFloors.getSelectedItem()+"';";
+                        int result1 = statement.executeUpdate(commandLine1);
+                        int result2 = statement.executeUpdate(commandLine2);
+                        if(result2 == 1&&result1>0){
+                            tableModel.removeRow(listFloors.getSelectedIndex());
+                            listFloors.removeItemAt(listFloors.getSelectedIndex());
+                            listFloors.setSelectedIndex(0);
+                            JOptionPane.showMessageDialog(null,"Remove successfully 👌👌👌");
+                        }else{
+                            JOptionPane.showMessageDialog(null,"Add not successfully ❌❌❌");
+                        }
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
 
+            });
+        //System Report
+        systemReport.setLayout(null);
+        systemReport.setBackground(Color.WHITE);
         panel.add(systemReport);
         panel.revalidate();
         panel.repaint();

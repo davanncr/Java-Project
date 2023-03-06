@@ -11,7 +11,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -227,36 +226,18 @@ public class History {
                 java.sql.Date dt = new java.sql.Date(searchDate.getDate().getTime());
                 commandLine = "SELECT `no`,`id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `history` WHERE `"+option[filter.getSelectedIndex()]+"`='"+dt+"' ORDER BY `room`;";
             }
-            java.lang.System.out.println(commandLine);
-            defaultTableModel = new TableEditable();
-            defaultTableModel.addColumn("NO");
-            defaultTableModel.addColumn("Room");
-            defaultTableModel.addColumn("ID Card");
-            defaultTableModel.addColumn("Full Name");
-            defaultTableModel.addColumn("Sex");
-            defaultTableModel.addColumn("Phone Number");
-            defaultTableModel.addColumn("Date Hire");
-            defaultTableModel.addColumn("Date Expire");
+            while (defaultTableModel.getRowCount()>0){
+                defaultTableModel.removeRow(0);
+            }
             try {
                 statement= MysqlService.getConnection().createStatement();
                 ResultSet resultSet = statement.executeQuery(commandLine);
                 while (resultSet.next()){
-
                     defaultTableModel.addRow(new Object[]{resultSet.getInt(1),resultSet.getString(8),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getString(5),resultSet.getString(6),resultSet.getString(7)});
                 }
-                tablePanel.removeAll();
-                table = new JTable(defaultTableModel);
-                table.setBackground(Color.white);
-                scrollPane = new JScrollPane(table);
-                scrollPane.setBackground(Color.white);
-                tablePanel.add(scrollPane);
-                tablePanel.revalidate();
-                tablePanel.repaint();
-
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-
         });
         return panel;
     }

@@ -31,7 +31,6 @@ public class Dasboard extends Window {
         add(featurePanel);
         setRightPanel();
         add(rightPanel);
-
     }
     private void setFeaturePanel(){
         featurePanel = new JPanel();
@@ -97,11 +96,19 @@ public class Dasboard extends Window {
         label[4].addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                selectedLabel.setBounds(0,label[4].getY()-5,featurePanel.getWidth(),40);
-                rightPanel.removeAll();
-                rightPanel.add(System.getPanel());
-                revalidate();
-                repaint();
+                JPasswordField jpf = new JPasswordField();
+                int verify= JOptionPane.showConfirmDialog(null,jpf,"Verify Security",JOptionPane.YES_NO_OPTION);
+                String password = jpf.getText();
+                if(password.equals("system")&&verify==0){
+                    selectedLabel.setBounds(0,label[4].getY()-5,featurePanel.getWidth(),40);
+                    rightPanel.removeAll();
+                    rightPanel.add(System.getPanel());
+                    revalidate();
+                    repaint();
+                }else if(verify==0){
+                    JOptionPane.showMessageDialog(null,"Password is invalid!");
+                }
+
             }
         });
         //Exit Button
