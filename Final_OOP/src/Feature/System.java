@@ -1,5 +1,6 @@
 package Feature;
 
+import Provider.Model;
 import Provider.MysqlService;
 import Provider.TableEditable;
 
@@ -90,6 +91,14 @@ public class System {
             systemPrice.add(jtfPrice);
             //button set price
             buttonSet.setBounds(460,190,120,30);
+            buttonSet.setFont(Model.font2);
+            buttonSet.setUI(new javax.swing.plaf.basic.BasicButtonUI(){
+                @Override
+                public void installDefaults(AbstractButton btn){
+                    super.installDefaults(btn);
+                    btn.setBackground(new Color(250, 119, 2));
+                }
+            });
             systemPrice.add(buttonSet);
             buttonSet.addActionListener(e->{
                 String commandSQL="";
@@ -190,8 +199,16 @@ public class System {
                 systemReport.add(jtfNumberRoom);
                 systemReport.add(lblTitleInputNumberFloor);
                 //button Add Floor
-                JButton btnAddMoreFloor = new JButton("Add More Floor");
+                JButton btnAddMoreFloor = new JButton("Add");
                 btnAddMoreFloor.setBounds(170,130,120,30);
+                btnAddMoreFloor.setFont(Model.font2);
+                btnAddMoreFloor.setUI(new javax.swing.plaf.basic.BasicButtonUI(){
+                    @Override
+                    public void installDefaults(AbstractButton btn){
+                        super.installDefaults(btn);
+                        btn.setBackground(new Color(250, 119, 2));
+                    }
+                });
                 btnAddMoreFloor.addActionListener(e->{
                     int x =JOptionPane.showConfirmDialog(null,"Are you sure?","Add More Floor",JOptionPane.YES_NO_OPTION);
                     if(x == 0){
@@ -246,6 +263,14 @@ public class System {
             //button remove floor
             JButton btnRemoveFloor = new JButton("Remove");
             btnRemoveFloor.setBounds(495,100,120,30);
+            btnRemoveFloor.setFont(Model.font2);
+            btnRemoveFloor.setUI(new javax.swing.plaf.basic.BasicButtonUI(){
+                @Override
+                public void installDefaults(AbstractButton btn){
+                    super.installDefaults(btn);
+                    btn.setBackground(new Color(250, 119, 2));
+                }
+            });
             systemReport.add(btnRemoveFloor);
             btnRemoveFloor.addActionListener(e->{
                 int x =JOptionPane.showConfirmDialog(null,"Are you sure?","Add More Floor",JOptionPane.YES_NO_OPTION);

@@ -1,5 +1,6 @@
 package Provider;
 
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -20,4 +21,10 @@ public class Model {
             g2d.draw(rect);
         }
     };
+    public static JPanel messageBackground(){
+        JPanel panel = new JPanel();
+        panel.setBackground(new Color(250, 119, 2));
+        panel.setSize(400,400);
+        return panel;
+    }
 }

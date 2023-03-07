@@ -1,6 +1,7 @@
 package Feature;
 
 import Provider.GeneratorIcon;
+import Provider.Model;
 import Provider.MysqlService;
 import Provider.TableEditable;
 import com.toedter.calendar.JDateChooser;
@@ -11,6 +12,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -138,6 +140,15 @@ public class History {
         JButton[] operatorButton = new JButton[operatorName.length];
         for (int i=0; i<operatorButton.length;i++){
             operatorButton[i] = new JButton(operatorName[i]);
+            operatorButton[i].setFont(Model.font2);
+            operatorButton[i].setUI(new javax.swing.plaf.basic.BasicButtonUI(){
+                @Override
+                public void installDefaults(AbstractButton btn){
+                    super.installDefaults(btn);
+                    btn.setBackground(new Color(250, 119, 2));
+                }
+            });
+            //operatorButton[i].setBackground(new Color(250, 119, 2));
             operatorButton[i].setBounds(230+150*i,535,100,30);
             panel.add(operatorButton[i]);
         }
@@ -163,19 +174,19 @@ public class History {
             rows.add(selectedRow);
 
             if (selectedRow != -1) {
-                if(operatorButton[0].getText().equalsIgnoreCase("Edit")) {
+                if(operatorButton[0].getLabel().equalsIgnoreCase("Edit")) {
                     no =Integer.parseInt(table.getValueAt(table.getSelectedRow(),0).toString());
                     verifySaving=false;
                     iconLabel.removeAll();
                     iconLabel.setIcon(GeneratorIcon.create("src/ICON/writing.png",20,20));
                     defaultTableModel.setRowEditable(selectedRow, true);
-                    operatorButton[0].setText("Save");
+                    operatorButton[0].setLabel("Save");
                 } else{
                     verifySaving=true;
                     iconLabel.removeAll();
                     iconLabel.setIcon(iconTable= GeneratorIcon.create("src/ICON/pointing.png",20,20));
                     defaultTableModel.setRowEditable(rows.get(0), false);
-                    operatorButton[0].setText("Edit");
+                    operatorButton[0].setLabel("Edit");
                     rows=new ArrayList<>();
                 }
                 table.setRowSelectionInterval(selectedRow, selectedRow);
@@ -223,7 +234,7 @@ public class History {
             }else if(filter.getSelectedIndex()==2||filter.getSelectedIndex()==3){
                 commandLine = "SELECT `no`,`id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `history` WHERE `"+option[filter.getSelectedIndex()]+"`='"+searchText.getText().trim()+"' ORDER BY `room`;";
             }else{
-                java.sql.Date dt = new java.sql.Date(searchDate.getDate().getTime());
+                Date dt = new Date(searchDate.getDate().getTime());
                 commandLine = "SELECT `no`,`id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `history` WHERE `"+option[filter.getSelectedIndex()]+"`='"+dt+"' ORDER BY `room`;";
             }
             while (defaultTableModel.getRowCount()>0){

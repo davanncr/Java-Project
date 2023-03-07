@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 
 import Provider.GeneratorIcon;
+import Provider.Model;
 import Provider.MysqlService;
 import Provider.TableEditable;
 import com.toedter.calendar.JDateChooser;
@@ -164,6 +165,14 @@ public class Staying {
         for (int i=0; i<operatorButton.length;i++){
             operatorButton[i] = new JButton(operatorName[i]);
             operatorButton[i].setBounds(150+150*i,535,100,30);
+            operatorButton[i].setFont(Model.font2);
+            operatorButton[i].setUI(new javax.swing.plaf.basic.BasicButtonUI(){
+                @Override
+                public void installDefaults(AbstractButton btn){
+                    super.installDefaults(btn);
+                    btn.setBackground(new Color(250, 119, 2));
+                }
+            });
             panel.add(operatorButton[i]);
         }
         //icons
@@ -188,19 +197,19 @@ public class Staying {
                 rows.add(selectedRow);
 
                 if (selectedRow != -1) {
-                    if(operatorButton[0].getText().equalsIgnoreCase("Edit")) {
+                    if(operatorButton[0].getLabel().equalsIgnoreCase("Edit")) {
                         roomName=table.getValueAt(table.getSelectedRow(),0).toString();
                         verifySaving=false;
                         iconLabel.removeAll();
                         iconLabel.setIcon(GeneratorIcon.create("src/ICON/writing.png",20,20));
                         defaultTableModel.setRowEditable(selectedRow, true);
-                        operatorButton[0].setText("Save");
+                        operatorButton[0].setLabel("Save");
                     } else{
                         verifySaving=true;
                         iconLabel.removeAll();
                         iconLabel.setIcon(iconTable= GeneratorIcon.create("src/ICON/pointing.png",20,20));
                         defaultTableModel.setRowEditable(rows.get(0), false);
-                        operatorButton[0].setText("Edit");
+                        operatorButton[0].setLabel("Edit");
                         rows=new ArrayList<>();
                     }
                     table.setRowSelectionInterval(selectedRow, selectedRow);

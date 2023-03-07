@@ -15,7 +15,8 @@ public class Dasboard extends Window {
     private JPanel superPanel;//for store other panel (rightPanel,featurePanel)
     private JPanel rightPanel;//for store other panel on the right
     private JPanel featurePanel;//for store other feature
-
+    private JPanel subRightPanel;
+    private static byte k=1;
     public Dasboard(){
         setSuperPanel();
         add(superPanel);
@@ -35,12 +36,12 @@ public class Dasboard extends Window {
     private void setFeaturePanel(){
         featurePanel = new JPanel();
         featurePanel.setSize(getWidth()/5, getHeight());
-        featurePanel.setBackground(Color.ORANGE);
+        featurePanel.setBackground(new Color(229, 90, 0));
         featurePanel.setLayout(null);
         //home icon
         ImageIcon homeIcon = GeneratorIcon.create("src/ICON/home.png",50,50);
         JLabel homeLabel = new JLabel(homeIcon);
-        homeLabel.setBounds(30,10,60,60);
+        homeLabel.setBounds(50,20,60,60);
         featurePanel.add(homeLabel);
         //label
         String[] labelTitle ={"Hire","Staying","Leaving","History","System"};
@@ -55,7 +56,7 @@ public class Dasboard extends Window {
         }
         JPanel selectedLabel = new JPanel();
         selectedLabel.setBounds(0,label[0].getY()-5,featurePanel.getWidth(),40);
-        selectedLabel.setBackground(new Color(140, 140, 140));
+        selectedLabel.setBackground(new Color(245, 151, 0));
         label[0].addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 selectedLabel.setBounds(0,label[0].getY()-5,featurePanel.getWidth(),40);
@@ -63,6 +64,7 @@ public class Dasboard extends Window {
                 rightPanel.add(Hire.getPanel());
                 revalidate();
                 repaint();
+                k=1;
             }
         });
         label[1].addMouseListener(new MouseAdapter() {
@@ -72,6 +74,7 @@ public class Dasboard extends Window {
                 rightPanel.add(Staying.getPanel());
                 revalidate();
                 repaint();
+                k=1;
             }
         });
         label[2].addMouseListener(new MouseAdapter() {
@@ -81,6 +84,7 @@ public class Dasboard extends Window {
                 rightPanel.add(Leaving.getPanel());
                 revalidate();
                 repaint();
+                k=1;
             }
         });
         label[3].addMouseListener(new MouseAdapter() {
@@ -91,23 +95,35 @@ public class Dasboard extends Window {
                 rightPanel.add(History.getPanel());
                 revalidate();
                 repaint();
+                k=1;
             }
         });
         label[4].addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                JPasswordField jpf = new JPasswordField();
-                int verify= JOptionPane.showConfirmDialog(null,jpf,"Verify Security",JOptionPane.YES_NO_OPTION);
-                String password = jpf.getText();
-                if(password.equals("system")&&verify==0){
+                if(k==1){
+                    JPasswordField jpf = new JPasswordField();
+
+                    int verify= JOptionPane.showConfirmDialog(Model.messageBackground(),jpf,"Security",JOptionPane.YES_NO_OPTION,JOptionPane.PLAIN_MESSAGE);
+                    String password = jpf.getText();
+                    if(password.equals("system")&&verify==0){
+                        selectedLabel.setBounds(0,label[4].getY()-5,featurePanel.getWidth(),40);
+                        rightPanel.removeAll();
+                        rightPanel.add(System.getPanel());
+                        revalidate();
+                        repaint();
+                        k=0;
+                    }else if(verify==0){
+                        JOptionPane.showMessageDialog(null,"Password is invalid!");
+                    }
+                }else{
                     selectedLabel.setBounds(0,label[4].getY()-5,featurePanel.getWidth(),40);
                     rightPanel.removeAll();
                     rightPanel.add(System.getPanel());
                     revalidate();
                     repaint();
-                }else if(verify==0){
-                    JOptionPane.showMessageDialog(null,"Password is invalid!");
                 }
+
 
             }
         });
@@ -116,7 +132,7 @@ public class Dasboard extends Window {
         JLabel lblExit = new JLabel();
         lblExit.setIcon(GeneratorIcon.create("src/ICON/shutdown.png",25,25));
         lblExit.setHorizontalAlignment(SwingConstants.CENTER);
-        btnExit.setBackground(Color.RED);
+        btnExit.setBackground(new Color(240, 40, 0));
         btnExit.setBounds(0,featurePanel.getHeight()-30,featurePanel.getWidth(),30);
         btnExit.setBorder(BorderFactory.createEmptyBorder());
         btnExit.setLayout(new GridLayout());
@@ -138,7 +154,7 @@ public class Dasboard extends Window {
     private void setRightPanel(){
         rightPanel = new JPanel();
         rightPanel.setSize(getWidth()-getWidth()/5,getHeight());
-        rightPanel.setBackground(Color.white);
+        rightPanel.setBackground(new Color(222, 218, 209));
         rightPanel.setLocation(getWidth()/5,0);
         rightPanel.setLayout(new GridLayout());
         rightPanel.add(Hire.getPanel());

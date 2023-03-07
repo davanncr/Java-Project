@@ -26,7 +26,7 @@ public class Hire{
     private static JComboBox<String> room = new JComboBox<>();
     public static JPanel getPanel(){
         JPanel panel = new JPanel();
-        panel.setBackground(Color.white);
+        panel.setBackground(new Color(247, 247, 245));
         panel.setLayout(null);
         //fullname
         JLabel lblFullname=new JLabel("Full Name");
@@ -37,19 +37,18 @@ public class Hire{
         jtfFullname.setBounds(50,45,600,30);
         jtfFullname.setRequestFocusEnabled(true);
         jtfFullname.setHorizontalAlignment(SwingConstants.CENTER);
-        jtfFullname.setBorder(Model.roundedBorder);
 
         panel.add(jtfFullname);
         //Gender
 
         ButtonGroup groupGender = new ButtonGroup();
         jtfFemale.setBounds(70,80,80,25);
-        jtfFemale.setBackground(Color.white);
+        jtfFemale.setBackground(new Color(247, 247, 245));
         jtfFemale.setFont(Model.font2);
         panel.add(jtfFemale);
 
         jtfMale.setBounds(150,80,100,25);
-        jtfMale.setBackground(Color.white);
+        jtfMale.setBackground(new Color(247, 247, 245));
         jtfMale.setFont(Model.font2);
 
         groupGender.add(jtfMale);
@@ -65,7 +64,6 @@ public class Hire{
         jtfPhone.setBounds(50,135,600,30);
         jtfPhone.setRequestFocusEnabled(true);
         jtfPhone.setHorizontalAlignment(SwingConstants.CENTER);
-        jtfPhone.setBorder(Model.roundedBorder);
         jtfPhone.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -89,7 +87,6 @@ public class Hire{
         jtfIDCard.setBounds(50,200,600,30);
         jtfIDCard.setRequestFocusEnabled(true);
         jtfIDCard.setHorizontalAlignment(SwingConstants.CENTER);
-        jtfIDCard.setBorder(Model.roundedBorder);
         jtfIDCard.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -115,7 +112,6 @@ public class Hire{
 
         dateHire.setRequestFocusEnabled(true);
         dateHire.setSelectableDateRange(new Date(),null);
-        dateHire.setBorder(Model.roundedBorder);
         panel.add(dateHire);
         //Date expire
         JLabel lblExpire = new JLabel("Date Expire");
@@ -147,9 +143,15 @@ public class Hire{
         }
         panel.add(room);
         //Save
-        Button btnSave = new Button("Submit");
-
-        btnSave.setBackground(new Color(242, 0, 116));
+        JButton btnSave = new JButton("Submit");
+        btnSave.setFont(Model.font2);
+        btnSave.setUI(new javax.swing.plaf.basic.BasicButtonUI(){
+            @Override
+            public void installDefaults(AbstractButton btn){
+                super.installDefaults(btn);
+                btn.setBackground(new Color(250, 119, 2));
+            }
+        });
         btnSave.setBounds(300,490,100,30);
         btnSave.addActionListener(e->{
             if(jtfPhone.getText().length()==9||jtfPhone.getText().length()==10){
