@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact name="Final_OOP:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Final_OOP_jar</output-path>
+    <root id="root">
+      <element id="archive" name="Final_OOP.jar">
+        <element id="module-output" name="Final_OOP" />
+      </element>
+      <element id="library" level="project" name="mysql.connector.java" />
+      <element id="library" level="project" name="toedter.jcalendar" />
+    </root>
+  </artifact>
+</component>

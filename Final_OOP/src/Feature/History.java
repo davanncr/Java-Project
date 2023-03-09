@@ -114,7 +114,7 @@ public class History {
         defaultTableModel.addColumn("ID Card");
         defaultTableModel.addColumn("Full Name");
         defaultTableModel.addColumn("Sex");
-        defaultTableModel.addColumn("Phone Number");
+        defaultTableModel.addColumn("Phone");
         defaultTableModel.addColumn("Date Hire");
         defaultTableModel.addColumn("Date Expire");
 
@@ -130,7 +130,22 @@ public class History {
             throw new RuntimeException(e);
         }
         table = new JTable(defaultTableModel);
-        table.setBackground(Color.white);
+        table.setRowHeight(25);
+        table.setSelectionForeground(Color.BLUE);
+        table.getTableHeader().setReorderingAllowed(false);
+        table.setSelectionBackground(new Color(245, 151, 0));
+        table.getTableHeader().setFont(new Font(null,Font.BOLD,11));
+//        table.getTableHeader().setBackground(new Color(229, 90, 0));
+
+        //new Color(229, 90, 0);
+//        table.getTableHeader().setUI(new javax.swing.plaf.basic.BasicTableHeaderUI(){
+//            @Override
+//            public void installUI(JComponent c) {
+//                super.installUI(c);
+//                c.setBackground( new Color(229, 90, 0));
+//            }
+//        });
+        //tablePanel.setBorder(BorderFactory.createLineBorder( new Color(229, 90, 0)));
         scrollPane = new JScrollPane(table);
         scrollPane.setBackground(Color.white);
         tablePanel.add(scrollPane);
@@ -141,6 +156,7 @@ public class History {
         for (int i=0; i<operatorButton.length;i++){
             operatorButton[i] = new JButton(operatorName[i]);
             operatorButton[i].setFont(Model.font2);
+            operatorButton[i].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             operatorButton[i].setUI(new javax.swing.plaf.basic.BasicButtonUI(){
                 @Override
                 public void installDefaults(AbstractButton btn){
@@ -230,12 +246,12 @@ public class History {
             String[] option={"id_card","phone","room","fullname","date_hire","date_expire"};
             String commandLine;
             if(filter.getSelectedIndex()<2){
-                commandLine = "SELECT `no`,`id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `history` WHERE `"+option[filter.getSelectedIndex()]+"`='"+searchNumber.getText().trim()+"' ORDER BY `room`;";
+                commandLine = "SELECT `no`,`id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `history` WHERE `"+option[filter.getSelectedIndex()]+"`LIKE '%"+searchNumber.getText().trim()+"%' ORDER BY `room`;";
             }else if(filter.getSelectedIndex()==2||filter.getSelectedIndex()==3){
-                commandLine = "SELECT `no`,`id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `history` WHERE `"+option[filter.getSelectedIndex()]+"`='"+searchText.getText().trim()+"' ORDER BY `room`;";
+                commandLine = "SELECT `no`,`id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `history` WHERE `"+option[filter.getSelectedIndex()]+"` LIKE '%"+searchText.getText().trim()+"%' ORDER BY `room`;";
             }else{
                 Date dt = new Date(searchDate.getDate().getTime());
-                commandLine = "SELECT `no`,`id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `history` WHERE `"+option[filter.getSelectedIndex()]+"`='"+dt+"' ORDER BY `room`;";
+                commandLine = "SELECT `no`,`id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `history` WHERE `"+option[filter.getSelectedIndex()]+"` = '"+dt+"' ORDER BY `room`;";
             }
             while (defaultTableModel.getRowCount()>0){
                 defaultTableModel.removeRow(0);

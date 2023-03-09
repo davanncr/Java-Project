@@ -70,6 +70,10 @@ public class System {
             throw new RuntimeException(e);
         }
         table = new JTable(tableModel);
+        table.setSelectionForeground(Color.BLUE);
+        table.getTableHeader().setReorderingAllowed(false);
+        table.setSelectionBackground(new Color(245, 151, 0));
+        table.getTableHeader().setFont(new Font(null,Font.BOLD,11));
         scrollPane = new JScrollPane(table);
         tablePanel.setBounds(30,50,300,219);
         tablePanel.setLayout(new GridLayout());

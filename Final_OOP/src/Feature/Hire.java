@@ -23,8 +23,9 @@ public class Hire{
     private static JTextField jtfIDCard = new JTextField();
     private static JDateChooser dateHire = new JDateChooser(new Date());
     private static JDateChooser dateExpire = new JDateChooser(new Date(new Date().getYear(),new Date().getMonth(),new Date().getDate()+1));
-    private static JComboBox<String> room = new JComboBox<>();
+    private static int selectedRoom = 0;
     public static JPanel getPanel(){
+        JComboBox<String> room = new JComboBox<>();
         JPanel panel = new JPanel();
         panel.setBackground(new Color(247, 247, 245));
         panel.setLayout(null);
@@ -141,7 +142,12 @@ public class Hire{
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        room.setSelectedIndex(selectedRoom);
         panel.add(room);
+        room.addPropertyChangeListener(e->{
+            selectedRoom = room.getSelectedIndex();
+        });
+
         //Save
         JButton btnSave = new JButton("Submit");
         btnSave.setFont(Model.font2);
@@ -153,6 +159,7 @@ public class Hire{
             }
         });
         btnSave.setBounds(300,490,100,30);
+        btnSave.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnSave.addActionListener(e->{
             if(jtfPhone.getText().length()==9||jtfPhone.getText().length()==10){
                 if(jtfIDCard.getText().length()==9){
@@ -176,17 +183,16 @@ public class Hire{
                                 int option = JOptionPane.showConfirmDialog(null,"Total: "+prices+"$","Total price",JOptionPane.YES_NO_OPTION);
                                 if(option == 0){
                                     int result = statement.executeUpdate(commandUpdate);
-                                    jtfFullname.setText("");
-                                    jtfFemale.setSelected(false);
-                                    jtfMale.setSelected(false);
-                                    jtfIDCard.setText("");
-                                    jtfPhone.setText("");
-                                    jtfFemale.setSelected(false);
-                                    jtfMale.setSelected(false);
-                                    dateHire.setDate(new Date());
-                                    room.removeItemAt(room.getSelectedIndex());
-                                    dateExpire.setDate(new Date(new Date().getYear(),new Date().getMonth(),new Date().getDate()+1));
                                     if(result ==1){
+                                        jtfFullname.setText("");
+                                        jtfFemale.setSelected(false);
+                                        jtfMale.setSelected(false);
+                                        jtfIDCard.setText("");
+                                        jtfPhone.setText("");
+                                        groupGender.clearSelection();
+                                        dateHire.setDate(new Date());
+                                        room.removeItemAt(room.getSelectedIndex());
+                                        dateExpire.setDate(new Date(new Date().getYear(),new Date().getMonth(),new Date().getDate()+1));
                                         JOptionPane.showMessageDialog(null,"Submit is successfully","Submission",JOptionPane.INFORMATION_MESSAGE);
                                     }else{
                                         JOptionPane.showMessageDialog(null,"Submit is not successfully","Submission",JOptionPane.ERROR);

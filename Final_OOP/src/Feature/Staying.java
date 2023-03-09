@@ -95,7 +95,7 @@ public class Staying {
             });
             searchPanel.add(searchNumber);
             filter.setSelectedIndex(0);
-        filter.addItemListener(e->{
+            filter.addItemListener(e->{
             if(filter.getSelectedIndex()<2){
                 if(searchNumber.getText().trim().length()>9){
                     searchNumber.setText(searchNumber.getText().substring(0,9));
@@ -136,7 +136,7 @@ public class Staying {
         defaultTableModel.addColumn("ID Card");
         defaultTableModel.addColumn("Full Name");
         defaultTableModel.addColumn("Sex");
-        defaultTableModel.addColumn("Phone Number");
+        defaultTableModel.addColumn("Phone");
         defaultTableModel.addColumn("Date Hire");
         defaultTableModel.addColumn("Date Expire");
 
@@ -154,7 +154,11 @@ public class Staying {
             throw new RuntimeException(e);
         }
         table = new JTable(defaultTableModel);
-        table.setBackground(Color.white);
+        table.getTableHeader().setFont(new Font(null,Font.BOLD,11));
+        table.setRowHeight(25);
+        table.getTableHeader().setReorderingAllowed(false);
+        table.setSelectionBackground(new Color(245, 151, 0));
+
         scrollPane = new JScrollPane(table);
         scrollPane.setBackground(Color.white);
         tablePanel.add(scrollPane);
@@ -166,6 +170,7 @@ public class Staying {
             operatorButton[i] = new JButton(operatorName[i]);
             operatorButton[i].setBounds(150+150*i,535,100,30);
             operatorButton[i].setFont(Model.font2);
+            operatorButton[i].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             operatorButton[i].setUI(new javax.swing.plaf.basic.BasicButtonUI(){
                 @Override
                 public void installDefaults(AbstractButton btn){
@@ -276,9 +281,9 @@ public class Staying {
             String[] option={"id_card","phone","room","fullname","date_hire","date_expire"};
             String commandLine;
             if(filter.getSelectedIndex()<2){
-                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+searchNumber.getText().trim()+"' AND `date_expire`>DATE('"+expire_date+"') AND `date_hire`<=DATE('"+expire_date+"') ORDER BY `room`";
+                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"` LIKE '%"+searchNumber.getText().trim()+"%' AND `date_expire`>DATE('"+expire_date+"') AND `date_hire`<=DATE('"+expire_date+"') ORDER BY `room`";
             }else if(filter.getSelectedIndex()==2||filter.getSelectedIndex()==3){
-                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+searchText.getText().trim()+"' AND `date_expire`>DATE('"+expire_date+"') AND `date_hire`<=DATE('"+expire_date+"') ORDER BY `room`";
+                commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"` LIKE '%"+searchText.getText().trim()+"%' AND `date_expire`>DATE('"+expire_date+"') AND `date_hire`<=DATE('"+expire_date+"') ORDER BY `room`";
             }else{
                 java.sql.Date dt = new java.sql.Date(searchDate.getDate().getTime());
                 commandLine = "SELECT `id_card`,`fullname`,`sex`,`phone`,`date_hire`,`date_expire`,`room` FROM `roomdb` WHERE `"+option[filter.getSelectedIndex()]+"`='"+dt+"' AND `date_expire`>DATE('"+expire_date+"') AND `date_hire`<=DATE('"+expire_date+"') ORDER BY `room`";

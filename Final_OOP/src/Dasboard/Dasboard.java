@@ -105,7 +105,7 @@ public class Dasboard extends Window {
                     JPasswordField jpf = new JPasswordField();
 
                     int verify= JOptionPane.showConfirmDialog(Model.messageBackground(),jpf,"Security",JOptionPane.YES_NO_OPTION,JOptionPane.PLAIN_MESSAGE);
-                    String password = jpf.getText();
+                    String password = String.valueOf(jpf.getPassword());
                     if(password.equals("system")&&verify==0){
                         selectedLabel.setBounds(0,label[4].getY()-5,featurePanel.getWidth(),40);
                         rightPanel.removeAll();

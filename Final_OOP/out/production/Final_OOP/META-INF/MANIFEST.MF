@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Main-Class: Dasboard.Main
+Class-Path: mysql-connector-j-8.0.32.jar protobuf-java-3.21.9.jar jcalen
+ dar-1.4.jar
+
